@@ -1,17 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Castle.Core.Resource;
+using Microsoft.EntityFrameworkCore;
+using OrderServices.Helpers;
 using OrderServices.Models;
 using OrderServices.Repositories;
 using OrderServices.UnitOfWork;
+using OrderServices.ViewModels;
 
 namespace OrderServices.Services
 {
     public interface ICustomerService
     {
-        List<Customer> GetAll();
-        Customer GetById(int id);
-        Task<Customer> Add(Customer customer);
-        void Update(Customer customer);
-        void Delete(Customer customer);
+        ApiResponse<List<CustomerResponse>> GetAll();
+        Task<ApiResponse<CustomerResponse>> AddAsync(CustomerRequest customer);
+        Task<ApiResponse<CustomerResponse>> UpdateAsync(int customerId, CustomerRequest customer);
+        Task<ApiResponse<CustomerResponse>> DeleteAsync(int customerId);
     }
 
     public class CustomerService : ICustomerService
@@ -26,35 +28,95 @@ namespace OrderServices.Services
             _context = context;
         }
 
-        public List<Customer> GetAll()
+        public ApiResponse<List<CustomerResponse>> GetAll()
         {
-            var res = _customerRepository.GetAll().Result.ToList();
-            return res;
+            var res = _context.Set<Customer>()
+                .Select(c => new CustomerResponse
+                {
+                    CustomerId = c.CustomerId,
+                    FullName = c.FullName,
+                    Email = c.Email,
+                    PhoneNumber = c.PhoneNumber,
+                })
+                .AsNoTracking()
+                .ToList();
+
+            return ApiResponse<List<CustomerResponse>>.SuccessResponse(res);
         }
 
-        public Customer GetById(int id)
+        public async Task<ApiResponse<CustomerResponse>> AddAsync(CustomerRequest customerRequest)
         {
-            var res = _customerRepository.GetById(id);
-            return res;
-        }
-
-        public async Task<Customer> Add(Customer customer)
-        {
+            var customer = new Customer
+            {
+                FullName = customerRequest.FullName,
+                Email = customerRequest.Email,
+                PhoneNumber = customerRequest.PhoneNumber
+            };
             _customerRepository.Add(customer);
-            await _unitOfWork.SaveChangesAsync();
-            return customer;
+            var result = await _unitOfWork.SaveChangesAsync();
+            if (result <= 0)
+            {
+                return ApiResponse<CustomerResponse>.FailureResponse("Failed to create customer.");
+            }
+            var createdCustomer = new CustomerResponse
+            {
+                CustomerId = customer.CustomerId,
+                FullName = customer.FullName,
+                Email = customer.Email,
+                PhoneNumber = customer.PhoneNumber
+            };
+            return ApiResponse<CustomerResponse>.SuccessResponse(createdCustomer);
         }
 
-        public async void Update(Customer customer)
+        public async Task<ApiResponse<CustomerResponse>> UpdateAsync(int customerId, CustomerRequest customerRequest)
         {
-            _customerRepository.Update(customer);
-            await _unitOfWork.SaveChangesAsync();
+            var existingCustomer = await _customerRepository.GetByIdAsync(customerId);
+
+            if (existingCustomer == null)
+            {
+                return ApiResponse<CustomerResponse>.FailureResponse($"Customer with ID {customerId} not found.");
+            }
+
+            existingCustomer.FullName = customerRequest.FullName;
+            existingCustomer.Email = customerRequest.Email;
+            existingCustomer.PhoneNumber = customerRequest.PhoneNumber;
+
+            //_customerRepository.Update(existingCustomer);
+            var result = await _unitOfWork.SaveChangesAsync();
+            if (result <= 0)
+            {
+                return ApiResponse<CustomerResponse>.FailureResponse("Failed to update customer.");
+            }
+
+            var customer =  new CustomerResponse
+            {
+                CustomerId = existingCustomer.CustomerId,
+                FullName = existingCustomer.FullName,
+                Email = existingCustomer.Email,
+                PhoneNumber = existingCustomer.PhoneNumber
+            };
+            return ApiResponse<CustomerResponse>.SuccessResponse(customer);
         }
 
-        public async void Delete(Customer customer)
+        public async Task<ApiResponse<CustomerResponse>> DeleteAsync(int customerId)
         {
-            _customerRepository.Delete(customer);
-            await _unitOfWork.SaveChangesAsync();
+            var existingCustomer = await _customerRepository.GetByIdAsync(customerId);
+            if (existingCustomer == null) return ApiResponse<CustomerResponse>.FailureResponse($"Customer with ID {customerId} not found.");
+
+            _customerRepository.Delete(existingCustomer);
+            var result = await _unitOfWork.SaveChangesAsync();
+            if (result <= 0)
+            {
+                return ApiResponse<CustomerResponse>.FailureResponse("Failed to update customer.");
+            }
+            var customer = new CustomerResponse
+            {
+                CustomerId = existingCustomer.CustomerId,
+                FullName = existingCustomer.FullName,
+                Email = existingCustomer.Email,
+                PhoneNumber = existingCustomer.PhoneNumber
+            };
+            return ApiResponse<CustomerResponse>.SuccessResponse(customer);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderServices.Models;
 
 namespace OrderServices.Repositories
 {
@@ -6,7 +7,7 @@ namespace OrderServices.Repositories
     {
         Task<IEnumerable<T>> GetAll();
 
-        T GetById(int id);
+        Task<T> GetByIdAsync(int id);
 
         void Add(T entity);
 
@@ -30,9 +31,9 @@ namespace OrderServices.Repositories
             return _dbSet.AsNoTracking();
         }
 
-        public T GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
-            return _dbSet.Find(id);
+            return await _dbSet.FindAsync(id);
         }
 
         public void Add(T entity)

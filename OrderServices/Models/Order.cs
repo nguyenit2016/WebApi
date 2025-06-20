@@ -16,7 +16,6 @@ namespace OrderServices.Models
         [Required]
         public DateTime OrderDate { get; set; }
 
-        [Required]
         public decimal TotalAmount { get; set; }
 
 

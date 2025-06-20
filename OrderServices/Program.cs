@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OrderServices.Helpers;
 using OrderServices.UnitOfWork;
 using System.Reflection;
 
@@ -27,7 +28,11 @@ void RegisterServices(IServiceCollection services)
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
+builder.Services.AddControllers(opt =>
+{
+    opt.Filters.Add<ValidateModelAttribute>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
