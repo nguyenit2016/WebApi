@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35828.75 d17.13
+VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderServices", "OrderServices.csproj", "{A717CBE4-EC67-471C-98BB-CA3E2AEB570F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestOrderServices", "..\TestOrderServices\TestOrderServices.csproj", "{36A5712C-C78E-4BF6-B3C6-DE72EE7F0778}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A717CBE4-EC67-471C-98BB-CA3E2AEB570F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A717CBE4-EC67-471C-98BB-CA3E2AEB570F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A717CBE4-EC67-471C-98BB-CA3E2AEB570F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A5712C-C78E-4BF6-B3C6-DE72EE7F0778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A5712C-C78E-4BF6-B3C6-DE72EE7F0778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A5712C-C78E-4BF6-B3C6-DE72EE7F0778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A5712C-C78E-4BF6-B3C6-DE72EE7F0778}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

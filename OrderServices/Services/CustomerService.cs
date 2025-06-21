@@ -101,7 +101,10 @@ namespace OrderServices.Services
         public async Task<ApiResponse<CustomerResponse>> DeleteAsync(int customerId)
         {
             var existingCustomer = await _customerRepository.GetByIdAsync(customerId);
-            if (existingCustomer == null) return ApiResponse<CustomerResponse>.FailureResponse($"Customer with ID {customerId} not found.");
+            if (existingCustomer == null)
+            {
+                return ApiResponse<CustomerResponse>.FailureResponse($"Customer with ID {customerId} not found.");
+            }
 
             _customerRepository.Delete(existingCustomer);
             var result = await _unitOfWork.SaveChangesAsync();

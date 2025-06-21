@@ -9,10 +9,12 @@ namespace OrderServices.Helpers
         {
             if (!context.ModelState.IsValid)
             {
-                var errors = context.ModelState.Values
-                    .SelectMany(x => x.Errors)
-                    .Select(x => x.ErrorMessage)
-                    .ToList();
+                var errors = context.ModelState
+                .Where(ms => ms.Value.Errors.Any())
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                );
 
                 var response = ApiResponse<object>.FailureResponse("Validation failed", errors);
                 context.Result = new BadRequestObjectResult(response);

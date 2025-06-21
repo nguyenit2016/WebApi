@@ -28,21 +28,30 @@ namespace OrderServices.Controllers
         public async Task<IActionResult> CreateCustomer([FromBody] CustomerRequest customer)
         {
             var result = await _customerService.AddAsync(customer);
-            return result.Success ? Ok(result) : BadRequest(result);
+            if (result.Success)
+                return Ok(result);
+
+            return BadRequest(result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerRequest customer)
         {
             var result = await _customerService.UpdateAsync(id, customer);
-            return result.Success ? Ok(result) : NotFound(result);
+            if (result.Success)
+                return Ok(result);
+
+            return NotFound(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             var result = await _customerService.DeleteAsync(id);
-            return result.Success ? Ok(result) : NotFound(result);
+            if (result.Success)
+                return Ok(result);
+
+            return NotFound(result);
         }
     }
 }
